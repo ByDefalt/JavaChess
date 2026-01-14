@@ -22,6 +22,8 @@ public class Chessboard {
         });
     }
 
+
+
     public Square getSquare(String name) {
         return squares.get(name);
     }

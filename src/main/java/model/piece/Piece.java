@@ -1,6 +1,7 @@
 package model.piece;
 
 
+import model.ChessGame;
 import model.Chessboard;
 import model.Move;
 import model.color.Color;
@@ -12,9 +13,9 @@ public abstract class Piece {
     private Color color;
     private Movement movement;
 
-    public List<Move> getPossibleMoves(Chessboard chessboard){
+    public List<Move> getPossibleMoves(ChessGame chessGame){
         if (movement == null) return List.of();
-        return movement.getPossibleMoves(this, chessboard);
+        return movement.getPossibleMoves(this, chessGame);
     }
 
 

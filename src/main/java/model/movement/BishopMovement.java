@@ -9,7 +9,7 @@ import model.piece.Piece;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RookMovement implements Movement {
+public class BishopMovement implements Movement {
 
     @Override
     public List<Move> getPossibleMoves(Piece piece, ChessGame chessGame) {
@@ -20,21 +20,28 @@ public class RookMovement implements Movement {
         char file = from.getName().charAt(0);
         int rank = Integer.parseInt(from.getName().substring(1));
 
-        // 4 directions : droite, gauche, haut, bas
+        // 4 directions diagonales
         int[][] directions = {
-                {1,0}, {-1,0}, {0,1}, {0,-1}
+                { 1,  1},  // haut-droite
+                { 1, -1},  // bas-droite
+                {-1,  1},  // haut-gauche
+                {-1, -1}   // bas-gauche
         };
 
         for (int[] dir : directions) {
-            int dx = dir[0], dy = dir[1];
-            char targetFile = (char) file;
+            int dx = dir[0];
+            int dy = dir[1];
+
+            char targetFile = file;
             int targetRank = rank;
+
             while (true) {
                 targetFile += dx;
                 targetRank += dy;
                 String targetName = "" + targetFile + targetRank;
+
                 Square to = chessGame.getChessboard().getSquare(targetName);
-                if (to == null) break;
+                if (to == null) break; // hors échiquier
 
                 Piece captured = to.getPiece();
                 if (captured == null) {
@@ -43,7 +50,7 @@ public class RookMovement implements Movement {
                     if (!captured.getColor().equals(piece.getColor())) {
                         moves.add(new Move(piece, from, to, captured));
                     }
-                    break; // bloque après capture
+                    break; // bloqué après capture
                 }
             }
         }

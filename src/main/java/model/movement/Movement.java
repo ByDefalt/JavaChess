@@ -1,5 +1,6 @@
 package model.movement;
 
+import model.ChessGame;
 import model.Chessboard;
 import model.Move;
 import model.Square;
@@ -9,5 +10,6 @@ import java.util.List;
 
 public interface Movement {
 
-    public List<Move> getPossibleMoves(Piece piece, Chessboard chessboard);
+    public List<Move> getPossibleMoves(Piece piece, ChessGame chessGame);
+
 }

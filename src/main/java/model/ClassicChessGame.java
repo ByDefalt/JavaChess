@@ -1,11 +1,13 @@
 package model;
 
 import model.color.Black;
+import model.color.Color;
 import model.color.White;
-import model.movement.KingMovement;
-import model.movement.PawnMovement;
-import model.movement.RookMovement;
+import model.movement.*;
 import model.piece.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ClassicChessGame extends ChessGame {
 
@@ -36,6 +38,7 @@ public class ClassicChessGame extends ChessGame {
             square.setPiece(pawn);
         }
     }
+
     public static char getPieceChar(Piece piece) {
         String name = piece.getClass().getSimpleName();
         if (name.equals("King")) return 'K';
@@ -63,14 +66,17 @@ public class ClassicChessGame extends ChessGame {
                     }
                     case 'b', 'g' -> {
                         Knight knight = new Knight();
+                        knight.setMovement(new KnightMovement());
                         createPiece(square, knight, rank);
                     }
                     case 'c', 'f' -> {
                         Bishop bishop = new Bishop();
+                        bishop.setMovement(new BishopMovement());
                         createPiece(square, bishop, rank);
                     }
                     case 'd' -> {
                         Queen queen = new Queen();
+                        queen.setMovement(new QueenMovement());
                         createPiece(square, queen, rank);
                     }
                     case 'e' -> {
@@ -81,6 +87,76 @@ public class ClassicChessGame extends ChessGame {
                 }
                 super.getChessboard().getSquares().put(square.getName(),square);
             }
+        }
+    }
+
+    @Override
+    public void play() {
+        boolean gameFinished = false;
+        int turn = 0; // 0 = blanc, 1 = noir
+        int maxTurns = 300;
+        int currentTurn = 1;
+
+        System.out.println("=== GAME STARTED ===");
+        System.out.println(this); // afficher plateau initial
+
+        while (!gameFinished && currentTurn <= maxTurns) {
+            System.out.println("=== Turn " + currentTurn + " ===");
+            System.out.println(turn == 0 ? "White to move" : "Black to move");
+
+            // Récupérer toutes les pièces du joueur actuel
+            Color currentColor = turn == 0 ? new White() : new Black();
+            List<Move> possibleMoves = new ArrayList<>();
+
+            for (Square square : getChessboard().getSquares().values()) {
+                Piece piece = square.getPiece();
+                if (piece != null && piece.getColor().equals(currentColor)) {
+                    possibleMoves.addAll(piece.getPossibleMoves(this));
+                }
+            }
+
+            if (possibleMoves.isEmpty()) {
+                System.out.println((turn == 0 ? "White" : "Black") + " has no moves. Game over!");
+                gameFinished = true;
+                break;
+            }
+
+            // Pour l'instant : choisir un coup aléatoire
+            Move move = possibleMoves.get((int) (Math.random() * possibleMoves.size()));
+
+            // Appliquer le coup
+            move.getTo().setPiece(move.getPiece());
+            move.getFrom().setPiece(null);
+
+            // Afficher le coup joué
+            System.out.println(move);
+
+            // Afficher plateau
+            System.out.println(this);
+
+            // Vérifier si un roi est capturé → fin de partie
+            boolean whiteKingAlive = false;
+            boolean blackKingAlive = false;
+            for (Square square : getChessboard().getSquares().values()) {
+                Piece piece = square.getPiece();
+                if (piece != null) {
+                    if (piece instanceof King && piece.getColor() instanceof White) whiteKingAlive = true;
+                    if (piece instanceof King && piece.getColor() instanceof Black) blackKingAlive = true;
+                }
+            }
+            if (!whiteKingAlive || !blackKingAlive) {
+                System.out.println("Game finished! " + (!whiteKingAlive ? "Black wins!" : "White wins!"));
+                gameFinished = true;
+                break;
+            }
+
+            // Passer au joueur suivant
+            turn = 1 - turn;
+            currentTurn++;
+        }
+
+        if (!gameFinished) {
+            System.out.println("Max turns reached. Draw!");
         }
     }
 

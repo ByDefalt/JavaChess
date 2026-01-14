@@ -14,6 +14,13 @@ public class ChessGame extends Game {
         this.init();
     }
 
+    public Move getLastMove(){
+        if (moves.isEmpty()) {
+            return null;
+        }else {
+            return moves.getLast();
+        }
+    }
 
     public Chessboard getChessboard() {
         return chessboard;
@@ -35,4 +42,9 @@ public class ChessGame extends Game {
     public void init() {
 
     }
+
+    @Override
+    public void play() {
+    }
+
 }
