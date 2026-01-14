@@ -1,28 +1,45 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.List;
+import model.piece.Piece;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Chessboard {
-    private List<Square> squares = new ArrayList<>();
+    Map<String, Square> squares;
+
 
     public Chessboard() {
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                Square square = new Square();
-                char file = (char) ('a' + j);
-                int rank = 8 - i;
-                square.setName("" + file + rank);
-                squares.add(square);
-            }
-        }
+        squares = new TreeMap<>((s1, s2) -> {
+            int rank1 = Integer.parseInt(s1.substring(1));
+            int rank2 = Integer.parseInt(s2.substring(1));
+            char file1 = s1.charAt(0);
+            char file2 = s2.charAt(0);
+
+            // Comparer d'abord les rangs (ligne), puis fichiers (colonne)
+            if (rank1 != rank2) return rank1 - rank2;
+            return file1 - file2;
+        });
     }
 
-    public List<Square> getSquares() {
+    public Square getSquare(String name) {
+        return squares.get(name);
+    }
+
+    public Square getSquare(Piece piece) {
+        for (Square square : squares.values()) {
+            if (square.getPiece() != null && square.getPiece().equals(piece)) {
+                return square;
+            }
+        }
+        return null;
+    }
+
+    public Map<String, Square> getSquares() {
         return squares;
     }
 
-    public void setSquares(List<Square> squares) {
+    public void setSquares(Map<String, Square> squares) {
         this.squares = squares;
     }
 }
